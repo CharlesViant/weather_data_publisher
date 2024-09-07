@@ -1,4 +1,5 @@
 const mqtt = require('mqtt');
+const cron = require('cron');
 
 // Informations du broker MQTT
 const MQTT_BROKER = "mqtt://broker.hivemq.com";
@@ -36,8 +37,8 @@ function generateRandomMessage() {
 client.on('connect', () => {
   console.log('Connected to MQTT broker');
 
-  // Envoi d'un message toutes les minutes
-  setInterval(() => {
+  // Cron job pour envoyer un message chaque minute
+  const job = new cron.CronJob('*/1 * * * *', () => {
     const message = generateRandomMessage();
     const messageString = JSON.stringify(message);
 
@@ -49,7 +50,10 @@ client.on('connect', () => {
         console.log('Message published:', messageString);
       }
     });
-  }, 60000); // 60000 millisecondes = 1 minute
+  });
+
+  // Démarrage du cron job
+  job.start();
 });
 
 // Gestion des erreurs de connexion
