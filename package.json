@@ -1,0 +1,16 @@
+{
+  "name": "weather_date_pushisher",
+  "version": "1.0.0",
+  "description": "Publish random weather data to a broker. Will maybe publish data from weather API in the future",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cron": "^3.1.7",
+    "mqtt": "^5.10.1"
+  }
+}
