@@ -13,10 +13,15 @@ const client = mqtt.connect(MQTT_BROKER, {
   reconnectPeriod: 1000,
 });
 
+// Liste des sondes fictives
+const sondes = [
+  { macAddress: "01:01:01:01", name: "Paris" },
+  { macAddress: "02:02:02:02", name: "Lyon" },
+  { macAddress: "03:03:03:03", name: "Marseille" },
+];
+
 // Fonction pour générer des valeurs aléatoires pour les mesures
-function generateRandomMessage() {
-  const macAddress = "01:01:01:01"; // MAC Address fixe ou aléatoire si nécessaire
-  const name = `random_1`;
+function generateRandomMessage(macAddress, name) {
   const pressure = (Math.random() * (990.0 - 950.0) + 950.0).toFixed(2); // Génère une pression entre 950.0 et 990.0
   const humidity = (Math.random() * (80.0 - 60.0) + 60.0).toFixed(2); // Génère une humidité entre 60.0 et 80.0
   const temperature = (Math.random() * (30.0 - 15.0) + 15.0).toFixed(2); // Génère une température entre 15.0 et 30.0
@@ -36,18 +41,20 @@ function generateRandomMessage() {
 client.on('connect', () => {
   console.log('Connected to MQTT broker');
 
-  // Envoi d'un message toutes les minutes
+  // Envoi des messages toutes les minutes pour chaque sonde
   setInterval(() => {
-    const message = generateRandomMessage();
-    const messageString = JSON.stringify(message);
+    sondes.forEach(sonde => {
+      const message = generateRandomMessage(sonde.macAddress, sonde.name);
+      const messageString = JSON.stringify(message);
 
-    // Publier le message sur le topic
-    client.publish(MQTT_TOPIC, messageString, { qos: 0, retain: false }, (error) => {
-      if (error) {
-        console.error('Error publishing message:', error);
-      } else {
-        console.log('Message published:', messageString);
-      }
+      // Publier le message sur le topic
+      client.publish(MQTT_TOPIC, messageString, { qos: 0, retain: false }, (error) => {
+        if (error) {
+          console.error('Error publishing message:', error);
+        } else {
+          console.log('Message published:', messageString);
+        }
+      });
     });
   }, 60000); // 60000 millisecondes = 1 minute
 });
